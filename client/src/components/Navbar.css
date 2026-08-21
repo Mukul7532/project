@@ -1,0 +1,109 @@
+:root {
+  --bg-primary: #0b0c10;
+  --bg-nav: rgba(14, 15, 20, 0.92);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --text-primary: #f2f2f5;
+  --text-secondary: #8b8f9c;
+  --accent: #4f7fff;
+  --accent-soft: rgba(79, 127, 255, 0.12);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+  background: var(--bg-nav);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4f7fff, #7c5cff);
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.logo-text {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+}
+
+.logo-text b {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.navbar-links {
+  display: flex;
+  list-style: none;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links a {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  transition: all 0.2s ease;
+}
+
+.navbar-links a:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.navbar-links a.active {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.navbar-user .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2c2f3a, #1a1c22);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 14px 20px;
+  }
+  .navbar-links {
+    display: none;
+  }
+}

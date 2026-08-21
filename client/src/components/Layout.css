@@ -1,0 +1,26 @@
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg-primary, #0b0c10);
+  color: var(--text-primary, #f2f2f5);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.page-container h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02px;
+  margin-bottom: 8px;
+}
+
+.page-container .page-subtitle {
+  color: var(--text-secondary, #8b8f9c);
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+}
