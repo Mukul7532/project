@@ -1,11 +1,22 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./Dashboard";
+import Logs from "./pages/Logs";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
-    <Layout>
-      <Dashboard />
-    </Layout>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/logs" element={<Logs />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
