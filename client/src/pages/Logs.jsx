@@ -3,8 +3,11 @@ import AuditLogTable from "../components/AuditLogTable";
 import { mockAuditLogs } from "../data/mockAuditLogs";
 import "./Logs.css";
 
+const PAGE_SIZE = 5;
+
 export default function Logs() {
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   const filteredLogs = useMemo(() => {
     if (!query.trim()) return mockAuditLogs;
@@ -17,6 +20,19 @@ export default function Logs() {
     );
   }, [query]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+
+  const paginatedLogs = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredLogs.slice(start, start + PAGE_SIZE);
+  }, [filteredLogs, currentPage]);
+
+  const handleSearchChange = (value) => {
+    setQuery(value);
+    setPage(1);
+  };
+
   return (
     <div>
       <h1>Logs</h1>
@@ -27,17 +43,39 @@ export default function Logs() {
           type="text"
           placeholder="Search by user, action, or resource..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="logs-search-input"
         />
         {query && (
-          <button className="logs-search-clear" onClick={() => setQuery("")}>
+          <button className="logs-search-clear" onClick={() => handleSearchChange("")}>
             ×
           </button>
         )}
       </div>
 
-      <AuditLogTable logs={filteredLogs} />
+      <AuditLogTable logs={paginatedLogs} />
+
+      {filteredLogs.length > 0 && (
+        <div className="pagination-row">
+          <button
+            className="pagination-btn"
+            disabled={currentPage === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <span className="pagination-info">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            className="pagination-btn"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

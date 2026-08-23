@@ -120,3 +120,42 @@
 .toggle-switch.on .toggle-knob {
   transform: translateX(20px);
 }
+
+.settings-save-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.save-btn {
+  padding: 10px 22px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent, #4f7fff);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.save-btn:hover {
+  opacity: 0.9;
+}
+
+.save-btn:active {
+  transform: scale(0.97);
+}
+
+.save-confirm {
+  color: #4ade80;
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

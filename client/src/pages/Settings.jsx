@@ -2,15 +2,25 @@ import { useState } from "react";
 import "./Settings.css";
 
 export default function Settings() {
+  const [name, setName] = useState("Morgan Lee");
+  const [email, setEmail] = useState("morgan.lee@auditrail.io");
   const [notifications, setNotifications] = useState({
     email: true,
     failedLogins: true,
     weeklyDigest: false,
   });
   const [darkMode, setDarkMode] = useState(true);
+  const [saved, setSaved] = useState(false);
 
   const toggleNotification = (key) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSave = () => {
+    // TODO: replace with a real API call once backend has a /api/settings route
+    console.log("Saving settings:", { name, email, notifications, darkMode });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   };
 
   return (
@@ -21,15 +31,15 @@ export default function Settings() {
       <div className="settings-card">
         <h2>Profile</h2>
         <div className="profile-row">
-          <div className="profile-avatar">M</div>
+          <div className="profile-avatar">{name.charAt(0)}</div>
           <div className="profile-fields">
             <label>
               Name
-              <input type="text" defaultValue="Morgan Lee" />
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
             </label>
             <label>
               Email
-              <input type="email" defaultValue="morgan.lee@auditrail.io" />
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </label>
           </div>
         </div>
@@ -71,6 +81,13 @@ export default function Settings() {
             </button>
           </div>
         ))}
+      </div>
+
+      <div className="settings-save-row">
+        <button className="save-btn" onClick={handleSave}>
+          Save Changes
+        </button>
+        {saved && <span className="save-confirm">✓ Settings saved</span>}
       </div>
     </div>
   );
