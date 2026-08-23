@@ -1,0 +1,58 @@
+.activity-chart-card {
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: chartIn 0.5s ease forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes chartIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.activity-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.activity-chart-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #f2f2f5);
+  margin: 0;
+}
+
+.activity-chart-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #8b8f9c);
+}
+
+.chart-tooltip {
+  background: #14161c;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.chart-tooltip-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #8b8f9c);
+  margin: 0 0 2px;
+}
+
+.chart-tooltip-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #f2f2f5);
+  margin: 0;
+}

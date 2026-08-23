@@ -38,6 +38,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  transform: scale(1);
+}
+
+.filter-chip:active {
+  transform: scale(0.94);
 }
 
 .filter-chip:hover {
@@ -83,8 +88,13 @@
   border-bottom: none;
 }
 
+.audit-log-table tbody tr {
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
 .audit-log-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(79, 127, 255, 0.05);
+  transform: translateX(2px);
 }
 
 .col-time {
