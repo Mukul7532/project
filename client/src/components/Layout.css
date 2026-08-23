@@ -24,3 +24,12 @@
   font-size: 0.95rem;
   margin-bottom: 32px;
 }
+.data-notice {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(255, 177, 92, 0.1);
+  border: 1px solid rgba(255, 177, 92, 0.25);
+  color: #ffb15c;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
