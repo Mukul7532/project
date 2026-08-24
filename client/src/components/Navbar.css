@@ -99,11 +99,31 @@
   cursor: pointer;
 }
 
-@media (max-width: 640px) {
+
+@media (max-width: 700px) {
   .navbar {
-    padding: 14px 20px;
+    padding: 12px 16px;
   }
+
   .navbar-links {
+    gap: 10px;
+  }
+
+  .navbar-links a {
+    font-size: 0.75rem;
+  }
+
+  .logo-text {
     display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar-links {
+    gap: 6px;
+  }
+
+  .navbar-links a {
+    font-size: 0.68rem;
   }
 }

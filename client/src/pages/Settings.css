@@ -159,3 +159,23 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@media (max-width: 500px) {
+  .profile-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-fields {
+    width: 100%;
+  }
+
+  .settings-save-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-btn {
+    width: 100%;
+  }
+}
