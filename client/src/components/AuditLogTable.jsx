@@ -1,80 +1,61 @@
-import { useMemo, useState } from "react";
-import "./AuditLogTable.css";
+import { useState } from 'react';
+import './AuditLogTable.css';
 
-const FILTERS = ["all", "success", "warning", "failed"];
+export default function AuditLogTable({ logs = [] }) {
+  const [sortConfig, setSortConfig] = useState({key: 'timestamp', direction: 'desc'});
 
-function formatTimestamp(iso) {
-  const date = new Date(iso);
-  return date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!logs || logs.length === 0) {
+    return (
+      <div className="empty-state">
+        <div className="empty-state-icon">📋</div>
+        <h3 className="empty-state-title">No Audit Logs</h3>
+      </div>
+    );
+  }
+
+  const getActionBadge = (action) => {
+    const map = {'create': 'success', 'update': 'warning', 'delete': 'error', 'view': 'info'};
+    return map[action?.toLowerCase()] || 'secondary';
+  };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
+    setSortConfig({ key, direction });
+  };
+
+  const sortedLogs = [...logs].sort((a, b) => {
+    const aVal = a[sortConfig.key];
+    const bVal = b[sortConfig.key];
+    return sortConfig.direction === 'asc'
+      ? typeof aVal === 'string' ? aVal.localeCompare(bVal) : aVal - bVal
+      : typeof aVal === 'string' ? bVal.localeCompare(aVal) : bVal - aVal;
   });
-}
-
-export default function AuditLogTable({ logs }) {
-  const [activeFilter, setActiveFilter] = useState("all");
-
-  const filteredLogs = useMemo(() => {
-    if (activeFilter === "all") return logs;
-    return logs.filter((log) => log.status === activeFilter);
-  }, [logs, activeFilter]);
 
   return (
-    <div className="audit-log-card">
-      <div className="audit-log-header">
-        <h2>Recent Activity</h2>
-        <div className="audit-log-filters">
-          {FILTERS.map((filter) => (
-            <button
-              key={filter}
-              className={`filter-chip ${activeFilter === filter ? "active" : ""}`}
-              onClick={() => setActiveFilter(filter)}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="audit-log-table-wrap">
-        <table className="audit-log-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Resource</th>
-              <th>Status</th>
+    <div className="table-wrapper">
+      <table className="audit-table">
+        <thead>
+          <tr>
+            <th className="sortable" onClick={() => handleSort('timestamp')}>Timestamp ⇅</th>
+            <th className="sortable" onClick={() => handleSort('entity')}>Entity ⇅</th>
+            <th className="sortable" onClick={() => handleSort('action')}>Action ⇅</th>
+            <th className="sortable" onClick={() => handleSort('user')}>User ⇅</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedLogs.map((log, i) => (
+            <tr key={i}>
+              <td>{new Date(log.timestamp).toLocaleString()}</td>
+              <td><strong>{log.entity}</strong></td>
+              <td><span className={`badge badge-${getActionBadge(log.action)}`}>{log.action}</span></td>
+              <td>{log.user || 'System'}</td>
+              <td>{log.details || '-'}</td>
             </tr>
-          </thead>
-          <tbody>
-            {filteredLogs.map((log) => (
-              <tr key={log.id}>
-                <td className="col-time">{formatTimestamp(log.timestamp)}</td>
-                <td>{log.user}</td>
-                <td>
-                  <span className="action-tag">{log.action}</span>
-                </td>
-                <td>{log.resource}</td>
-                <td>
-                  <span className={`status-badge status-${log.status}`}>
-                    {log.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {filteredLogs.length === 0 && (
-              <tr>
-                <td colSpan={5} className="empty-row">
-                  No logs match this filter.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

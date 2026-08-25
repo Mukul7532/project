@@ -1,140 +1,89 @@
-.audit-log-card {
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  overflow: hidden;
-}
-
-.audit-log-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-}
-
-.audit-log-header h2 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary, #f2f2f5);
-  margin: 0;
-}
-
-.audit-log-filters {
-  display: flex;
-  gap: 6px;
-}
-
-.filter-chip {
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  background: transparent;
-  color: var(--text-secondary, #8b8f9c);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  transform: scale(1);
-}
-
-.filter-chip:active {
-  transform: scale(0.94);
-}
-
-.filter-chip:hover {
-  color: var(--text-primary, #f2f2f5);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.filter-chip.active {
-  color: var(--accent, #4f7fff);
-  background: var(--accent-soft, rgba(79, 127, 255, 0.12));
-  border-color: transparent;
-}
-
-.audit-log-table-wrap {
+.table-wrapper {
   overflow-x: auto;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-sm);
 }
 
-.audit-log-table {
+.audit-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
+  background-color: var(--color-bg-primary);
 }
 
-.audit-log-table th {
+.audit-table thead {
+  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border-primary);
+}
+
+.audit-table th {
+  padding: var(--space-lg);
   text-align: left;
-  padding: 12px 24px;
-  color: var(--text-secondary, #8b8f9c);
-  font-weight: 500;
-  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+}
+
+.audit-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--transition-fast);
+}
+
+.audit-table th.sortable:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.audit-table td {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-border-primary);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.audit-table tbody tr:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.badge {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-xs);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+  letter-spacing: 0.5px;
 }
 
-.audit-log-table td {
-  padding: 14px 24px;
-  color: var(--text-primary, #f2f2f5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-  white-space: nowrap;
+.badge-success {
+  background-color: #f0fdf4;
+  color: var(--color-success);
 }
 
-.audit-log-table tbody tr:last-child td {
-  border-bottom: none;
+.badge-warning {
+  background-color: #fffbeb;
+  color: var(--color-warning);
 }
 
-.audit-log-table tbody tr {
-  transition: background 0.15s ease, transform 0.15s ease;
+.badge-error {
+  background-color: #fee2e2;
+  color: var(--color-error);
 }
 
-.audit-log-table tbody tr:hover {
-  background: rgba(79, 127, 255, 0.05);
-  transform: translateX(2px);
+.badge-info {
+  background-color: #f0f9ff;
+  color: var(--color-info);
 }
 
-.col-time {
-  color: var(--text-secondary, #8b8f9c);
+.badge-secondary {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
 }
 
-.action-tag {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--text-secondary, #8b8f9c);
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.status-success {
-  color: #4ade80;
-  background: rgba(74, 222, 128, 0.12);
-}
-
-.status-warning {
-  color: #ffb15c;
-  background: rgba(255, 177, 92, 0.12);
-}
-
-.status-failed {
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.12);
-}
-
-.empty-row {
-  text-align: center;
-  color: var(--text-secondary, #8b8f9c);
-  padding: 32px !important;
+@media (max-width: 768px) {
+  .audit-table th,
+  .audit-table td {
+    padding: var(--space-md);
+    font-size: var(--text-xs);
+  }
 }

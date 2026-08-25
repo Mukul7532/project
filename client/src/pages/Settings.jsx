@@ -1,94 +1,88 @@
-import { useState } from "react";
-import "./Settings.css";
+import { useState } from 'react';
+import './Settings.css';
 
 export default function Settings() {
-  const [name, setName] = useState("Morgan Lee");
-  const [email, setEmail] = useState("morgan.lee@auditrail.io");
-  const [notifications, setNotifications] = useState({
-    email: true,
-    failedLogins: true,
-    weeklyDigest: false,
+  const [settings, setSettings] = useState({
+    appName: 'Audit Trail',
+    timezone: 'UTC',
+    retention: '365',
+    notifications: true
   });
-  const [darkMode, setDarkMode] = useState(true);
   const [saved, setSaved] = useState(false);
 
-  const toggleNotification = (key) => {
-    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setSettings(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
-  const handleSave = () => {
-    // TODO: replace with a real API call once backend has a /api/settings route
-    console.log("Saving settings:", { name, email, notifications, darkMode });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await new Promise(resolve => setTimeout(resolve, 500));
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setTimeout(() => setSaved(false), 3000);
   };
 
   return (
     <div>
       <h1>Settings</h1>
-      <p className="page-subtitle">Manage your profile and preferences.</p>
+      <p className="page-subtitle">Configure application settings.</p>
 
-      <div className="settings-card">
-        <h2>Profile</h2>
-        <div className="profile-row">
-          <div className="profile-avatar">{name.charAt(0)}</div>
-          <div className="profile-fields">
+      {saved && <div className="data-notice data-success">✓ Settings saved successfully!</div>}
+
+      <form onSubmit={handleSubmit} className="settings-form">
+        <div className="settings-section">
+          <h2>Application Settings</h2>
+          
+          <div className="form-group">
+            <label>Application Name</label>
+            <input
+              type="text"
+              name="appName"
+              value={settings.appName}
+              onChange={handleChange}
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Timezone</label>
+            <select name="timezone" value={settings.timezone} onChange={handleChange} className="form-select">
+              <option value="UTC">UTC</option>
+              <option value="EST">EST</option>
+              <option value="PST">PST</option>
+              <option value="IST">IST</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Logs Retention (days)</label>
+            <input
+              type="number"
+              name="retention"
+              value={settings.retention}
+              onChange={handleChange}
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group checkbox">
             <label>
-              Name
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-            </label>
-            <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                type="checkbox"
+                name="notifications"
+                checked={settings.notifications}
+                onChange={handleChange}
+              />
+              Enable Email Notifications
             </label>
           </div>
         </div>
-      </div>
 
-      <div className="settings-card">
-        <h2>Appearance</h2>
-        <div className="settings-row">
-          <div>
-            <p className="settings-row-title">Dark Mode</p>
-            <p className="settings-row-desc">Use the dark theme across the app</p>
-          </div>
-          <button
-            className={`toggle-switch ${darkMode ? "on" : ""}`}
-            onClick={() => setDarkMode(!darkMode)}
-          >
-            <span className="toggle-knob" />
-          </button>
-        </div>
-      </div>
-
-      <div className="settings-card">
-        <h2>Notifications</h2>
-        {[
-          { key: "email", label: "Email notifications", desc: "Get notified about important account activity" },
-          { key: "failedLogins", label: "Failed login alerts", desc: "Alert me on suspicious login attempts" },
-          { key: "weeklyDigest", label: "Weekly digest", desc: "Summary of activity sent every Monday" },
-        ].map((item) => (
-          <div className="settings-row" key={item.key}>
-            <div>
-              <p className="settings-row-title">{item.label}</p>
-              <p className="settings-row-desc">{item.desc}</p>
-            </div>
-            <button
-              className={`toggle-switch ${notifications[item.key] ? "on" : ""}`}
-              onClick={() => toggleNotification(item.key)}
-            >
-              <span className="toggle-knob" />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="settings-save-row">
-        <button className="save-btn" onClick={handleSave}>
-          Save Changes
-        </button>
-        {saved && <span className="save-confirm">✓ Settings saved</span>}
-      </div>
+        <button type="submit" className="btn btn-primary">💾 Save Settings</button>
+      </form>
     </div>
   );
 }

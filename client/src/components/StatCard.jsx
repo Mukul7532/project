@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import "./StatCard.css";
+import { useEffect, useState } from 'react';
+import './StatCard.css';
 
-export default function StatCard({ label, value, trend, tone = "default" }) {
+export default function StatCard({ label, value, trend, tone = 'primary', icon = '📊' }) {
   const [displayValue, setDisplayValue] = useState(0);
-  const numericValue = typeof value === "string" ? parseInt(value.replace(/,/g, ""), 10) : value;
+  const numericValue = typeof value === 'string' 
+    ? parseInt(value.replace(/,/g, ''), 10) 
+    : value;
 
   useEffect(() => {
     if (isNaN(numericValue)) {
@@ -30,13 +32,25 @@ export default function StatCard({ label, value, trend, tone = "default" }) {
     return () => clearInterval(timer);
   }, [numericValue, value]);
 
+  const getTrendClass = () => {
+    if (!trend) return '';
+    if (trend.includes('+')) return 'trend-up';
+    if (trend.includes('-')) return 'trend-down';
+    return 'trend-neutral';
+  };
+
   return (
     <div className={`stat-card stat-card--${tone}`}>
-      <span className="stat-card-label">{label}</span>
-      <span className="stat-card-value">
-        {isNaN(numericValue) ? value : displayValue.toLocaleString()}
-      </span>
-      {trend && <span className="stat-card-trend">{trend}</span>}
+      <div className="stat-card-header">
+        <div>
+          <span className="stat-card-label">{label}</span>
+          <span className="stat-card-value">
+            {isNaN(numericValue) ? value : displayValue.toLocaleString()}
+          </span>
+        </div>
+        <div className="stat-card-icon">{icon}</div>
+      </div>
+      {trend && <span className={`stat-card-trend ${getTrendClass()}`}>{trend}</span>}
     </div>
   );
 }

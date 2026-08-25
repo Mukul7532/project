@@ -1,161 +1,73 @@
-.settings-card {
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  padding: 24px;
-  margin-bottom: 20px;
+.settings-form {
+  max-width: 600px;
 }
 
-.settings-card h2 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text-primary, #f2f2f5);
-  margin: 0 0 18px;
+.settings-section {
+  padding: var(--space-xl);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-2xl);
 }
 
-.profile-row {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
+.settings-section h2 {
+  margin-top: 0;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--color-primary);
 }
 
-.profile-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f7fff, #7b5cff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.profile-fields {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
 }
 
-.profile-fields label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: var(--text-secondary, #8b8f9c);
+.form-group label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
-.profile-fields input {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-primary, #f2f2f5);
-  font-size: 0.9rem;
+.form-input,
+.form-select {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus,
+.form-select:focus {
   outline: none;
-  transition: border-color 0.2s ease;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-faint);
 }
 
-.profile-fields input:focus {
-  border-color: var(--accent, #4f7fff);
-}
-
-.settings-row {
-  display: flex;
-  justify-content: space-between;
+.form-group.checkbox {
+  flex-direction: row;
   align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.settings-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.settings-row-title {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-primary, #f2f2f5);
-  margin: 0 0 2px;
-}
-
-.settings-row-desc {
-  font-size: 0.8rem;
-  color: var(--text-secondary, #8b8f9c);
+.form-group.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
   margin: 0;
 }
 
-.toggle-switch {
-  width: 44px;
-  height: 24px;
-  border-radius: 20px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  position: relative;
+.form-group.checkbox input {
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  transition: background 0.2s ease;
-  flex-shrink: 0;
 }
 
-.toggle-switch.on {
-  background: var(--accent, #4f7fff);
-}
-
-.toggle-knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  transition: transform 0.2s ease;
-}
-
-.toggle-switch.on .toggle-knob {
-  transform: translateX(20px);
-}
-
-.settings-save-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 8px;
-}
-
-.save-btn {
-  padding: 10px 22px;
-  border-radius: 10px;
-  border: none;
-  background: var(--accent, #4f7fff);
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.save-btn:hover {
-  opacity: 0.9;
-}
-
-.save-btn:active {
-  transform: scale(0.97);
-}
-
-.save-confirm {
-  color: #4ade80;
-  font-size: 0.85rem;
-  font-weight: 500;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@media (max-width: 768px) {
+  .settings-form {
+    max-width: 100%;
+  }
 }

@@ -1,60 +1,57 @@
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import "./ActivityChart.css";
+import { useEffect, useState } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import './ActivityChart.css';
 
-const mockTrendData = [
-  { day: "Mon", actions: 42 },
-  { day: "Tue", actions: 58 },
-  { day: "Wed", actions: 35 },
-  { day: "Thu", actions: 71 },
-  { day: "Fri", actions: 64 },
-  { day: "Sat", actions: 29 },
-  { day: "Sun", actions: 96 },
-];
-
-function CustomTooltip({ active, payload, label }) {
-  if (active && payload && payload.length) {
-    return (
-      <div className="chart-tooltip">
-        <p className="chart-tooltip-label">{label}</p>
-        <p className="chart-tooltip-value">{payload[0].value} actions</p>
-      </div>
-    );
+const generateMockData = () => {
+  const data = [];
+  const now = new Date();
+  for (let i = 30; i > 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    data.push({
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      logs: Math.floor(Math.random() * 100) + 50,
+      errors: Math.floor(Math.random() * 20) + 5,
+      users: Math.floor(Math.random() * 50) + 30
+    });
   }
-  return null;
-}
+  return data;
+};
 
 export default function ActivityChart() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setData(generateMockData());
+  }, []);
+
+  if (!data.length) return <div className="skeleton" style={{height: '400px'}}></div>;
+
   return (
-    <div className="activity-chart-card">
-      <div className="activity-chart-header">
-        <h2>Activity Trend</h2>
-        <span className="activity-chart-subtitle">Last 7 days</span>
+    <div className="chart-container">
+      <div className="chart-header">
+        <h3 className="chart-title">Activity Trend (30 Days)</h3>
+        <span className="chart-period">📅 Last 30 Days</span>
       </div>
-      <ResponsiveContainer width="100%" height={220}>
-        <AreaChart data={mockTrendData} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={400}>
+        <AreaChart data={data} margin={{top: 10, right: 30, left: 0, bottom: 0}}>
           <defs>
-            <linearGradient id="accentGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4f7fff" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#4f7fff" stopOpacity={0} />
+            <linearGradient id="colorLogs" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="colorErrors" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#dc2626" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#dc2626" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-          <XAxis
-            dataKey="day"
-            stroke="#8b8f9c"
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis stroke="#8b8f9c" fontSize={12} tickLine={false} axisLine={false} width={30} />
-          <Tooltip content={<CustomTooltip />} />
-          <Area
-            type="monotone"
-            dataKey="actions"
-            stroke="#4f7fff"
-            strokeWidth={2}
-            fill="url(#accentGradient)"
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-primary)" />
+          <XAxis dataKey="date" stroke="var(--color-text-secondary)" />
+          <YAxis stroke="var(--color-text-secondary)" />
+          <Tooltip contentStyle={{backgroundColor: 'var(--color-bg-secondary)', border: '1px solid var(--color-border-primary)', borderRadius: '8px'}} />
+          <Legend />
+          <Area type="monotone" dataKey="logs" stroke="#3b82f6" fill="url(#colorLogs)" name="Logs" />
+          <Area type="monotone" dataKey="errors" stroke="#dc2626" fill="url(#colorErrors)" name="Errors" />
         </AreaChart>
       </ResponsiveContainer>
     </div>

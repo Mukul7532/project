@@ -1,81 +1,67 @@
-import { useMemo, useState } from "react";
-import AuditLogTable from "../components/AuditLogTable";
-import { mockAuditLogs } from "../data/mockAuditLogs";
-import "./Logs.css";
-
-const PAGE_SIZE = 5;
+import { useState, useEffect } from 'react';
+import AuditLogTable from '../components/AuditLogTable';
+import { fetchAuditLogs } from '../api';
+import './Logs.css';
 
 export default function Logs() {
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [actionFilter, setActionFilter] = useState('all');
 
-  const filteredLogs = useMemo(() => {
-    if (!query.trim()) return mockAuditLogs;
-    const lower = query.toLowerCase();
-    return mockAuditLogs.filter(
-      (log) =>
-        log.user.toLowerCase().includes(lower) ||
-        log.action.toLowerCase().includes(lower) ||
-        log.resource.toLowerCase().includes(lower)
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const result = await fetchAuditLogs();
+        setLogs(result.data || []);
+        setFilteredLogs(result.data || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    let filtered = logs;
+    if (searchTerm) filtered = filtered.filter(log =>
+      log.entity?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      log.user?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [query]);
+    if (actionFilter !== 'all') filtered = filtered.filter(log => log.action?.toLowerCase() === actionFilter.toLowerCase());
+    setFilteredLogs(filtered);
+  }, [searchTerm, actionFilter, logs]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-
-  const paginatedLogs = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filteredLogs.slice(start, start + PAGE_SIZE);
-  }, [filteredLogs, currentPage]);
-
-  const handleSearchChange = (value) => {
-    setQuery(value);
-    setPage(1);
-  };
+  if (loading) return <div className="skeleton" style={{height: '400px'}}></div>;
 
   return (
     <div>
-      <h1>Logs</h1>
-      <p className="page-subtitle">Search and filter the full audit log history.</p>
+      <h1>Audit Logs</h1>
+      <p className="page-subtitle">Complete audit trail of all system activities.</p>
 
-      <div className="logs-search-wrap">
+      <div className="logs-filters">
         <input
           type="text"
-          placeholder="Search by user, action, or resource..."
-          value={query}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="logs-search-input"
+          placeholder="Search logs..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="filter-input"
         />
-        {query && (
-          <button className="logs-search-clear" onClick={() => handleSearchChange("")}>
-            ×
-          </button>
-        )}
+        <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="filter-select">
+          <option value="all">All Actions</option>
+          <option value="create">Create</option>
+          <option value="update">Update</option>
+          <option value="delete">Delete</option>
+          <option value="view">View</option>
+        </select>
       </div>
 
-      <AuditLogTable logs={paginatedLogs} />
-
-      {filteredLogs.length > 0 && (
-        <div className="pagination-row">
-          <button
-            className="pagination-btn"
-            disabled={currentPage === 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Previous
-          </button>
-          <span className="pagination-info">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            className="pagination-btn"
-            disabled={currentPage === totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className="logs-info">Showing <strong>{filteredLogs.length}</strong> of <strong>{logs.length}</strong> logs</div>
+      <AuditLogTable logs={filteredLogs} />
     </div>
   );
 }
