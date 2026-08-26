@@ -3,7 +3,7 @@ import "./Navbar.css";
 
 export default function Navbar() {
   return (
-    <nav className="navbar">
+    <nav className="navbar" aria-label="Main navigation">
       <div className="navbar-logo">
         <span className="logo-mark">AT</span>
         <span className="logo-text">Audit<b>Trail</b></span>
@@ -31,7 +31,7 @@ export default function Navbar() {
         </li>
       </ul>
       <div className="navbar-user">
-        <div className="avatar">M</div>
+        <div className="avatar" role="button" tabIndex={0} aria-label="User menu">M</div>
       </div>
     </nav>
   );

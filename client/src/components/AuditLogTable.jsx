@@ -25,7 +25,7 @@ export default function AuditLogTable({ logs }) {
     <div className="audit-log-card">
       <div className="audit-log-header">
         <h2>Recent Activity</h2>
-        <div className="audit-log-filters">
+        <div className="audit-log-filters" role="group" aria-label="Filter logs by status">
           {FILTERS.map((filter) => (
             <button
               key={filter}
@@ -39,7 +39,7 @@ export default function AuditLogTable({ logs }) {
       </div>
 
       <div className="audit-log-table-wrap">
-        <table className="audit-log-table">
+        <table className="audit-log-table" aria-label="Audit log entries">
           <thead>
             <tr>
               <th>Time</th>

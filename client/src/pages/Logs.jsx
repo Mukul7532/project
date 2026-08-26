@@ -45,9 +45,14 @@ export default function Logs() {
           value={query}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="logs-search-input"
+          aria-label="Search audit logs"
         />
         {query && (
-          <button className="logs-search-clear" onClick={() => handleSearchChange("")}>
+          <button
+            className="logs-search-clear"
+            onClick={() => handleSearchChange("")}
+            aria-label="Clear search"
+          >
             ×
           </button>
         )}
