@@ -17,7 +17,6 @@ export default function Settings() {
   };
 
   const handleSave = () => {
-    // TODO: replace with a real API call once backend has a /api/settings route
     console.log("Saving settings:", { name, email, notifications, darkMode });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -55,6 +54,8 @@ export default function Settings() {
           <button
             className={`toggle-switch ${darkMode ? "on" : ""}`}
             onClick={() => setDarkMode(!darkMode)}
+            aria-label="Toggle dark mode"
+            aria-pressed={darkMode}
           >
             <span className="toggle-knob" />
           </button>
@@ -76,6 +77,8 @@ export default function Settings() {
             <button
               className={`toggle-switch ${notifications[item.key] ? "on" : ""}`}
               onClick={() => toggleNotification(item.key)}
+              aria-label={`Toggle ${item.label}`}
+              aria-pressed={notifications[item.key]}
             >
               <span className="toggle-knob" />
             </button>
