@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 import Logs from "./pages/Logs";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Timeline from "./pages/Timeline";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/logs" element={<Logs />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/timeline" element={<Timeline />} />
         </Routes>
       </Layout>
     </BrowserRouter>
