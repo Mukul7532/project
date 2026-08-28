@@ -20,6 +20,11 @@ export default function Navbar() {
           </NavLink>
         </li>
         <li>
+  <NavLink to="/timeline" className={({ isActive }) => (isActive ? "active" : "")}>
+    Timeline
+  </NavLink>
+</li>
+        <li>
           <NavLink to="/reports" className={({ isActive }) => (isActive ? "active" : "")}>
             Reports
           </NavLink>
