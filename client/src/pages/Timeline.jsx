@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchShipment } from "../api";
+import { buildProjectionFromEvents } from "../utils/shipmentReducer";
+import { mockSensorReadings } from "../data/mockShipmentEvents";
+import SensorChart from "../components/SensorChart";
 import "./Timeline.css";
 
 const EVENT_LABELS = {
@@ -36,12 +39,44 @@ function describePayload(eventType, payload = {}) {
   }
 }
 
+function StateFields({ projection }) {
+  return (
+    <div className="reconstruction-grid">
+      <div className="reconstruction-field">
+        <span className="field-label">Shipment ID</span>
+        <span className="field-value">{projection.shipmentId ?? "—"}</span>
+      </div>
+      <div className="reconstruction-field">
+        <span className="field-label">Status</span>
+        <span className="field-value status-pill">{projection.status}</span>
+      </div>
+      <div className="reconstruction-field">
+        <span className="field-label">Location</span>
+        <span className="field-value">{projection.location ?? "—"}</span>
+      </div>
+      <div className="reconstruction-field">
+        <span className="field-label">Version</span>
+        <span className="field-value">v{projection.version}</span>
+      </div>
+      <div className="reconstruction-field">
+        <span className="field-label">Last Updated</span>
+        <span className="field-value">{formatTimestamp(projection.lastUpdated)}</span>
+      </div>
+      <div className="reconstruction-field">
+        <span className="field-label">Containers</span>
+        <span className="field-value">{projection.containers?.length ?? 0}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Timeline() {
   const [shipmentId, setShipmentId] = useState("");
   const [searchedId, setSearchedId] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [scrubValue, setScrubValue] = useState(100);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -51,26 +86,38 @@ export default function Timeline() {
     setLoading(true);
     setError(null);
     setResult(null);
-const { data, error: fetchError } = await fetchShipment(trimmed);
-setSearchedId(trimmed);
+    setScrubValue(100);
 
-if (data) {
-  setResult(data);
-}
-if (fetchError) {
-  setError(fetchError);
-}
-setLoading(false);
+    const { data, error: fetchError } = await fetchShipment(trimmed);
+    setSearchedId(trimmed);
+
+    if (data) {
+      setResult(data);
+    }
+    if (fetchError) {
+      setError(fetchError);
+    }
+    setLoading(false);
   };
 
   const projection = result?.data;
   const events = result?.events || [];
 
+  const eventTimes = events.map((e) => new Date(e.timestamp).getTime());
+  const minTime = eventTimes.length ? Math.min(...eventTimes) : null;
+  const maxTime = eventTimes.length ? Math.max(...eventTimes) : null;
+  const scrubTimestamp =
+    minTime !== null && maxTime !== null ? minTime + ((maxTime - minTime) * scrubValue) / 100 : null;
+
+  const scrubbedEvents = events.filter((e) => new Date(e.timestamp).getTime() <= scrubTimestamp);
+  const scrubbedProjection = scrubTimestamp !== null ? buildProjectionFromEvents(scrubbedEvents) : null;
+  const isLive = scrubValue === 100;
+
   return (
     <div>
       <h1>Shipment Timeline</h1>
       <p className="page-subtitle">
-        Look up a shipment to see its full event history and reconstructed current state.
+        Look up a shipment to see its full event history, reconstructed state, and rewind time.
       </p>
 
       <form className="timeline-search-wrap" onSubmit={handleSearch}>
@@ -90,45 +137,19 @@ setLoading(false);
       {error && (
         <div className="data-notice">
           {error}
-          {searchedId && (
-            <span className="notice-sub"> — no data found for "{searchedId}"</span>
-          )}
+          {searchedId && <span className="notice-sub"> — no data found for "{searchedId}"</span>}
         </div>
       )}
 
       {projection && (
         <div className="reconstruction-card">
           <div className="reconstruction-header">
-            <h2>Reconstructed State</h2>
-            <span className="reconstruction-badge">✓ Verified from {events.length} event{events.length !== 1 ? "s" : ""}</span>
+            <h2>Current Reconstructed State</h2>
+            <span className="reconstruction-badge">
+              ✓ Verified from {events.length} event{events.length !== 1 ? "s" : ""}
+            </span>
           </div>
-          <div className="reconstruction-grid">
-            <div className="reconstruction-field">
-              <span className="field-label">Shipment ID</span>
-              <span className="field-value">{projection.shipmentId}</span>
-            </div>
-            <div className="reconstruction-field">
-              <span className="field-label">Status</span>
-              <span className="field-value status-pill">{projection.status}</span>
-            </div>
-            <div className="reconstruction-field">
-              <span className="field-label">Location</span>
-              <span className="field-value">{projection.location ?? "—"}</span>
-            </div>
-            <div className="reconstruction-field">
-              <span className="field-label">Version</span>
-              <span className="field-value">v{projection.version}</span>
-            </div>
-            <div className="reconstruction-field">
-              <span className="field-label">Last Updated</span>
-              <span className="field-value">{formatTimestamp(projection.lastUpdated)}</span>
-            </div>
-            <div className="reconstruction-field">
-              <span className="field-label">Containers</span>
-              <span className="field-value">{projection.containers?.length ?? 0}</span>
-            </div>
-          </div>
-
+          <StateFields projection={projection} />
           {projection.containers?.length > 0 && (
             <div className="containers-list">
               {projection.containers.map((c) => (
@@ -143,30 +164,68 @@ setLoading(false);
         </div>
       )}
 
+      {events.length > 1 && (
+        <div className="scrubber-card">
+          <div className="scrubber-header">
+            <h2>State Scrubbing</h2>
+            <span className={`scrubber-badge ${isLive ? "live" : "past"}`}>
+              {isLive ? "● Live — current state" : `⏪ Viewing state as of ${formatTimestamp(scrubTimestamp)}`}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={scrubValue}
+            onChange={(e) => setScrubValue(Number(e.target.value))}
+            className="scrubber-slider"
+            aria-label="Rewind shipment state over time"
+          />
+          <div className="scrubber-range-labels">
+            <span>{formatTimestamp(minTime)}</span>
+            <span>{formatTimestamp(maxTime)}</span>
+          </div>
+
+          {scrubbedProjection && (
+            <div className={`scrubbed-state ${isLive ? "" : "scrubbed-state-past"}`}>
+              <StateFields projection={scrubbedProjection} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {events.length > 0 && (
+        <SensorChart readings={mockSensorReadings} events={events} />
+      )}
+
       {events.length > 0 && (
         <div className="timeline-card">
           <h2>Event Timeline</h2>
           <div className="timeline-track">
-            {events.map((event, idx) => (
-              <div className="timeline-item" key={`${event.aggregateId}-${event.version}`}>
-                <div className="timeline-marker">
-                  <span className="timeline-dot" />
-                  {idx < events.length - 1 && <span className="timeline-line" />}
-                </div>
-                <div className="timeline-content">
-                  <div className="timeline-content-header">
-                    <span className="timeline-event-type">
-                      {EVENT_LABELS[event.eventType] || event.eventType}
-                    </span>
-                    <span className="timeline-version">v{event.version}</span>
+            {events.map((event, idx) => {
+              const isFuture = !isLive && new Date(event.timestamp).getTime() > scrubTimestamp;
+              return (
+                <div
+                  className={`timeline-item ${isFuture ? "timeline-item-future" : ""}`}
+                  key={`${event.aggregateId}-${event.version}`}
+                >
+                  <div className="timeline-marker">
+                    <span className="timeline-dot" />
+                    {idx < events.length - 1 && <span className="timeline-line" />}
                   </div>
-                  <p className="timeline-description">
-                    {describePayload(event.eventType, event.payload)}
-                  </p>
-                  <span className="timeline-timestamp">{formatTimestamp(event.timestamp)}</span>
+                  <div className="timeline-content">
+                    <div className="timeline-content-header">
+                      <span className="timeline-event-type">
+                        {EVENT_LABELS[event.eventType] || event.eventType}
+                      </span>
+                      <span className="timeline-version">v{event.version}</span>
+                    </div>
+                    <p className="timeline-description">{describePayload(event.eventType, event.payload)}</p>
+                    <span className="timeline-timestamp">{formatTimestamp(event.timestamp)}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -40,3 +40,14 @@ export const mockShipmentProjection = {
   version: 4,
   lastUpdated: "2026-08-21T07:45:00Z",
 };
+export const mockSensorReadings = [
+  { timestamp: "2026-08-18T09:00:00Z", temperature: 4.2 },
+  { timestamp: "2026-08-18T18:00:00Z", temperature: 4.5 },
+  { timestamp: "2026-08-19T09:00:00Z", temperature: 4.9 },
+  { timestamp: "2026-08-19T14:30:00Z", temperature: 5.1 },
+  { timestamp: "2026-08-20T02:00:00Z", temperature: 6.0 },
+  { timestamp: "2026-08-20T10:15:00Z", temperature: 6.8 },
+  { timestamp: "2026-08-20T20:00:00Z", temperature: 7.4 },
+  { timestamp: "2026-08-21T04:00:00Z", temperature: 6.5 },
+  { timestamp: "2026-08-21T07:45:00Z", temperature: 5.9 },
+];
