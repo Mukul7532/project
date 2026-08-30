@@ -23,3 +23,12 @@ export function SkeletonTable() {
     </div>
   );
 }
+export function SkeletonTimeline() {
+  return (
+    <div className="skeleton-timeline">
+      <div className="skeleton skeleton-recon-card" />
+      <div className="skeleton skeleton-recon-card" style={{ height: 100 }} />
+      <div className="skeleton skeleton-recon-card" style={{ height: 200 }} />
+    </div>
+  );
+}

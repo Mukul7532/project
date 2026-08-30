@@ -3,6 +3,7 @@ import { fetchShipment } from "../api";
 import { buildProjectionFromEvents } from "../utils/shipmentReducer";
 import { mockSensorReadings } from "../data/mockShipmentEvents";
 import SensorChart from "../components/SensorChart";
+import { SkeletonTimeline } from "../components/Skeleton";
 import "./Timeline.css";
 
 const EVENT_LABELS = {
@@ -140,6 +141,7 @@ export default function Timeline() {
           {searchedId && <span className="notice-sub"> — no data found for "{searchedId}"</span>}
         </div>
       )}
+      {loading && <SkeletonTimeline />}
 
       {projection && (
         <div className="reconstruction-card">

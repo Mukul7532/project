@@ -55,3 +55,14 @@
     grid-template-columns: 1fr;
   }
 }
+.skeleton-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.skeleton-recon-card {
+  height: 160px;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
+}
