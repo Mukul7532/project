@@ -8,26 +8,24 @@ import { eventStoreRepository } from '../src/repositories/eventStoreRepository.j
 const mongoUri = process.env.MONGODB_URI
 const hasMongoConfiguration = Boolean(mongoUri)
 
-async function ensureDatabase() {
-  if (!hasMongoConfiguration) {
-    return false
+test.before(async () => {
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is required for MongoDB-backed event store tests.')
   }
 
-  try {
-    await connectToDatabase(mongoUri)
-    return true
-  } catch {
-    return false
-  }
-}
+  await connectToDatabase(mongoUri)
+})
+
+test.after(async () => {
+  await disconnectFromDatabase()
+})
 
 async function resetEventCollection() {
   if (!hasMongoConfiguration) {
     return
   }
 
-  const { default: Event } = await import('../src/models/Event.js')
-  await Event.deleteMany({})
+  await mongoose.connection.db.collection('events').deleteMany({})
 }
 
 test('event store repository exposes only append and read operations', () => {
@@ -116,12 +114,11 @@ test('appendEvent ignores client-supplied timestamps and generates backend times
   }
 })
 
-test('event store repository tests require MongoDB configuration', { skip: !hasMongoConfiguration }, async () => {
+test('event store repository tests require MongoDB configuration', async () => {
   assert.ok(hasMongoConfiguration)
 })
 
-test('appendEvent accepts a valid event', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent accepts a valid event', async () => {
   await resetEventCollection()
 
   const event = await eventStoreRepository.appendEvent({
@@ -136,12 +133,9 @@ test('appendEvent accepts a valid event', { skip: !hasMongoConfiguration }, asyn
   assert.deepEqual(event.payload, { containerId: 'CT-1', location: 'Port A' })
   assert.equal(event.version, 1)
   assert.ok(event.timestamp instanceof Date)
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects a missing aggregateId', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects a missing aggregateId', async () => {
   await resetEventCollection()
 
   await assert.rejects(
@@ -152,12 +146,9 @@ test('appendEvent rejects a missing aggregateId', { skip: !hasMongoConfiguration
     }),
     /aggregateId/i,
   )
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects a missing eventType', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects a missing eventType', async () => {
   await resetEventCollection()
 
   await assert.rejects(
@@ -168,12 +159,9 @@ test('appendEvent rejects a missing eventType', { skip: !hasMongoConfiguration }
     }),
     /eventType/i,
   )
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects a missing payload', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects a missing payload', async () => {
   await resetEventCollection()
 
   await assert.rejects(
@@ -184,12 +172,9 @@ test('appendEvent rejects a missing payload', { skip: !hasMongoConfiguration }, 
     }),
     /payload/i,
   )
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects an invalid version', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects an invalid version', async () => {
   await resetEventCollection()
 
   await assert.rejects(
@@ -201,12 +186,9 @@ test('appendEvent rejects an invalid version', { skip: !hasMongoConfiguration },
     }),
     /version/i,
   )
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects a non-positive version', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects a non-positive version', async () => {
   await resetEventCollection()
 
   await assert.rejects(
@@ -218,12 +200,9 @@ test('appendEvent rejects a non-positive version', { skip: !hasMongoConfiguratio
     }),
     /positive/i,
   )
-
-  await disconnectFromDatabase()
 })
 
-test('getEventsByAggregateId returns events in version order', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('getEventsByAggregateId returns events in version order', async () => {
   await resetEventCollection()
 
   await eventStoreRepository.appendEvent({
@@ -245,12 +224,9 @@ test('getEventsByAggregateId returns events in version order', { skip: !hasMongo
   assert.deepEqual(events.map((event) => event.version), [1, 2])
   assert.equal(events[0].eventType, 'CONTAINER_LOADED')
   assert.equal(events[1].eventType, 'CONTAINER_CREATED')
-
-  await disconnectFromDatabase()
 })
 
-test('appendEvent rejects duplicate aggregateId and version pairs', { skip: !hasMongoConfiguration }, async () => {
-  await ensureDatabase()
+test('appendEvent rejects duplicate aggregateId and version pairs', async () => {
   await resetEventCollection()
 
   await eventStoreRepository.appendEvent({
@@ -269,6 +245,4 @@ test('appendEvent rejects duplicate aggregateId and version pairs', { skip: !has
     }),
     /duplicate|version/i,
   )
-
-  await disconnectFromDatabase()
 })

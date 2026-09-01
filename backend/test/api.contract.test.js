@@ -1,6 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import mongoose from 'mongoose'
 import { createApp } from '../src/app.js'
+import { connectToDatabase, disconnectFromDatabase } from '../src/config/database.js'
+import Event from '../src/models/Event.js'
+
+const mongoUri = process.env.MONGODB_URI
 
 async function request(app, path, options = {}) {
   const server = app.listen(0)
@@ -23,6 +28,28 @@ async function request(app, path, options = {}) {
 
   return { status: response.status, body: json }
 }
+
+test.before(async () => {
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is required for API contract tests.')
+  }
+
+  await connectToDatabase(mongoUri)
+  await mongoose.connection.db.collection('events').deleteMany({})
+
+  await Event.create({
+    aggregateId: 'SHIP-2002',
+    eventType: 'CONTAINER_CREATED',
+    payload: { containerId: 'CT-API-2', location: 'Port A' },
+    version: 1,
+    timestamp: new Date(),
+  })
+})
+
+test.after(async () => {
+  await mongoose.connection.db.collection('events').deleteMany({})
+  await disconnectFromDatabase()
+})
 
 test('GET /api/health returns a success response', async () => {
   const app = createApp()
