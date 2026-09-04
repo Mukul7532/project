@@ -1,7 +1,9 @@
 {
-  "name": "client",
+  
+  "name": "audittrail-client",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Frontend for AuditTrail — an event-sourced shipment tracking dashboard.",
   "type": "module",
   "scripts": {
     "dev": "vite",
