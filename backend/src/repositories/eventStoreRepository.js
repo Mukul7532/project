@@ -97,7 +97,7 @@ export const eventStoreRepository = {
       if (error?.code === 11000) {
         throw Object.assign(new Error('Duplicate aggregateId and version combination detected'), {
           statusCode: 409,
-          type: 'validation_error',
+          type: 'concurrency_conflict',
           details: [{ field: 'aggregateId+version', message: 'Duplicate aggregateId and version combination detected' }],
         })
       }
@@ -125,6 +125,25 @@ export const eventStoreRepository = {
     const events = await Event.find({ aggregateId: normalizedAggregateId }).sort({ version: 1 }).lean()
 
     return events
+  },
+
+  async getCurrentVersionOfAggregate(aggregateId) {
+    const normalizedAggregateId = normalizeAggregateId(aggregateId)
+
+    // Find the event with the highest version for this aggregate
+    const lastEvent = await Event.findOne(
+      { aggregateId: normalizedAggregateId },
+      { version: 1 },
+    )
+      .sort({ version: -1 })
+      .lean()
+
+    // If no events exist, current version is 0 (next event should be version 1)
+    if (!lastEvent) {
+      return 0
+    }
+
+    return lastEvent.version
   },
 }
 

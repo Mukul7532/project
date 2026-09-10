@@ -21,9 +21,37 @@ export function validateRequest(validator, source = 'body') {
   }
 }
 
+function validateExpectedVersion(value, fieldName = 'expectedVersion') {
+  if (value === undefined || value === null) {
+    throw Object.assign(new Error(`${fieldName} is required`), {
+      statusCode: 400,
+      type: 'validation_error',
+      details: [{ field: fieldName, message: `${fieldName} is required` }],
+    })
+  }
+
+  if (!Number.isInteger(value)) {
+    throw Object.assign(new Error(`${fieldName} must be an integer`), {
+      statusCode: 400,
+      type: 'validation_error',
+      details: [{ field: fieldName, message: `${fieldName} must be an integer` }],
+    })
+  }
+
+  if (value < 0) {
+    throw Object.assign(new Error(`${fieldName} must be a non-negative integer`), {
+      statusCode: 400,
+      type: 'validation_error',
+      details: [{ field: fieldName, message: `${fieldName} must be a non-negative integer` }],
+    })
+  }
+
+  return value
+}
+
 export function validateShipmentMoveBody(request, _response, next) {
   return validateRequest((body) => {
-    const { shipmentId } = body ?? {}
+    const { shipmentId, expectedVersion } = body ?? {}
 
     if (typeof shipmentId !== 'string') {
       throw Object.assign(new Error('shipmentId must be a string'), {
@@ -51,6 +79,8 @@ export function validateShipmentMoveBody(request, _response, next) {
       })
     }
 
-    return { shipmentId: trimmed }
+    const validatedExpectedVersion = validateExpectedVersion(expectedVersion)
+
+    return { shipmentId: trimmed, expectedVersion: validatedExpectedVersion }
   })(request, _response, next)
 }
