@@ -7,12 +7,22 @@ export function errorHandler(error, _request, response, _next) {
   const isParseError = error.type === 'entity.parse.failed'
   const isValidationError = error.type === 'validation_error'
   const isNotFound = error.type === 'not_found'
+  const isConcurrencyConflict = error.type === 'concurrency_conflict'
 
   const message = statusCode >= 500
     ? 'Internal server error'
     : (error.message || 'Request failed')
 
-  const errorType = isParseError ? 'validation_error' : isValidationError ? 'validation_error' : isNotFound ? 'not_found' : 'internal_error'
+  let errorType = 'internal_error'
+  if (isParseError) {
+    errorType = 'validation_error'
+  } else if (isValidationError) {
+    errorType = 'validation_error'
+  } else if (isNotFound) {
+    errorType = 'not_found'
+  } else if (isConcurrencyConflict) {
+    errorType = 'concurrency_conflict'
+  }
 
   if (statusCode >= 500) {
     console.error(error)
